@@ -1,16 +1,30 @@
-const express = require('express');
+const express = require("express");
 const app = express();
-const port = 3000;
 
-const tareas = [
-{ id: 1, description: 'Estudiar Express', completed: false },
-  { id: 2, description: 'Asistir a clase de ingles', completed: true },
-  { id: 3, description: 'Estudiar para el examen', completed: false }
-];
-app.get('/', (req, res) => {
-    res.send(tareas);
-});
+const listViewRouter = require("./list-view-router");
+const listEditRouter = require("./list-edit-router");
+const validateMethod = (req, res, next) => {
+  if (
+    req.method === "GET" ||
+    req.method === "POST" ||
+    req.method === "PUT" ||
+    req.method === "DELETE"
+  ) {
+    next();
+  } else {
+    res.status(405).send("Método HTTP no permitido");
+  }
+};
+app.use(validateMethod);
 
+app.use(express.json());
+
+app.use("/tasks/view", listViewRouter);
+app.use("/tasks/edit", listEditRouter);
+
+app.post("/login");
+
+const port = 5000;
 app.listen(port, () => {
-    console.log('Servidor iniciado en el puerto 3000');
+  console.log(`Servidor en ejecución en http://localhost:${port}`);
 });
